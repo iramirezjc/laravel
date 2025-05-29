@@ -1,38 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipos</title>
-</head>
-<body>
-    <div class="equipos-index">
-        <div class="row">
-            <div class="col-sm-12">
-                <h2>Equipos</h2>    
-                <div class="panel-body">
-                    <form method="post" action="MostrarEquipo.php" >
-                        Nombre de equipo: <input type="text" name="filtro_nom" id="filtro_nom" />
-                        <button class="btn btn-success">Buscar</button>
-                    </form>
-                    <a href="create.php"> <button class="btn btn-primary" type="button" value="Agrgar">Agregar equipos</button> </a>
-                </div>
-            </div>
-            <div class="equipos">
-                <table class="table table-bordered table-hover alert-light">
-            
-                <!--<table border="1" id="tablas">-->
-                <thead>
-                    <tr>
-                        <th>Nombre del equipo</th>
-                        <th >Cantidad</th>
-                        <th>Descripcion</th>
-                        <th>Tipo</th>
-                        <th>Operaciones</th>
-                    </tr>
-                </thead>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('title', 'Listado de Equipos')
+
+@section('content')
+    <h1>Equipos</h1>
+
+    {{-- Buscador --}}
+    @include('equipos._search')
+
+    {{-- Botón para crear --}}
+    <a href="{{ route('equipos.create') }}" class="btn btn-success mb-3">Registrar Equipos</a>
+
+    {{-- Tabla de datos --}}
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Descripción</th>
+                <th>Tipo</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($equipos as $index => $equipo)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $equipo->Nombre }}</td>
+                    <td>{{ $equipo->Cantidad }}</td>
+                    <td>{{ $equipo->Descripcion }}</td>
+                    <td>{{ $equipo->TipoEquipo }}</td>
+                    <td class="d-flex gap-1">
+                        <a href="{{ route('equipos.show', $equipo->IdEquipo) }}" title="Ver" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye-fill"></i>
+                        </a>
+                        <a href="{{ route('equipos.edit', $equipo->IdEquipo) }}" title="Editar" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <form action="{{ route('equipos.destroy', $equipo->IdEquipo) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar este equipo?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" title="Eliminar" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6">No se encontraron equipos.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+@endsection
